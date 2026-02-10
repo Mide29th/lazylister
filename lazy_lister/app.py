@@ -3,17 +3,28 @@ import google.generativeai as genai
 from PIL import Image
 
 # --- CONFIGURATION ---
-# In a real app, use st.secrets for the API key, but for now input it in the sidebar
 st.set_page_config(page_title="Lazy Lister 🇳🇬", page_icon="🛍️")
+
+# Try to get API key from secrets first
+api_key = st.secrets.get("GEMINI_API_KEY")
 
 # --- UI LAYOUT ---
 st.title("🛍️ Lazy Lister (SellSharp)")
-st.write("Snap a pic, get a sales caption. Simple.")
+st.write("Snap a pic, get a sales caption. Simple but sharp! ✨")
 
 # Sidebar for setup
 with st.sidebar:
-    api_key = st.text_input("Enter Google API Key", type="password")
-    st.info("Get your key from aistudio.google.com")
+    st.header("Settings ⚙️")
+    if not api_key:
+        api_key = st.text_input("Enter Google API Key", type="password")
+        st.info("Get your key from aistudio.google.com")
+    else:
+        st.success("API Key is securely loaded! ✅")
+        if st.button("Use a different key?"):
+            st.session_state.custom_key = True
+        
+    if st.session_state.get("custom_key", False):
+        api_key = st.text_input("Enter New Google API Key", type="password")
 
 # --- MAIN LOGIC ---
 uploaded_file = st.file_uploader("Upload item photo", type=["jpg", "png", "jpeg"])
